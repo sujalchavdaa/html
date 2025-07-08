@@ -4,6 +4,8 @@ import re
 import random
 import time
 from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+import threading
+from flask import Flask
 
 OWNER = 8118667253 
 API_ID = os.getenv("API_ID", "25933223")
@@ -13,6 +15,18 @@ TOKEN = os.getenv("BOT_TOKEN", "8003010506:AAE6Pbjg4eZhmSflIHKtVxmeQU8L7KbCQi0")
 bot = telebot.TeleBot(TOKEN)
 
 user_state = {}
+
+app = Flask("render_web")
+
+@app.route("/")
+def home():
+    return "✅ Bot is running on Render!"
+
+def run_flask():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+
 
 
 
@@ -340,6 +354,10 @@ def handle_txt_file(message: Message):
 
 # ✅ Run bot only once (no duplicates)
 if __name__ == "__main__":
+    # Start Flask server in background thread
+    threading.Thread(target=run_flask).start()
+
+    # Start bot polling in main thread
     print("🤖 Bot is running... Waiting for messages.")
     bot.infinity_polling()
 
