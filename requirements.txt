@@ -1,0 +1,3 @@
+python-dotenv
+pyTelegramBotAPI
+pyTelegramBotAPI==4.15.2
