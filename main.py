@@ -32,7 +32,8 @@ def run_flask():
 
 
 
-# Function to extract URLs from textdef txt_to_html(txt_path, html_path):
+# Function to extract URLs from text
+def txt_to_html(txt_path, html_path):
     import os, html, re
     file_name = os.path.basename(txt_path).replace('.txt', '')
 
