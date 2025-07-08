@@ -32,8 +32,7 @@ def run_flask():
 
 
 
-# Function to extract URLs from text
-def txt_to_html(txt_path, html_path):
+# Function to extract URLs from textdef txt_to_html(txt_path, html_path):
     import os, html, re
     file_name = os.path.basename(txt_path).replace('.txt', '')
 
@@ -45,6 +44,14 @@ def txt_to_html(txt_path, html_path):
         'pdf': {"title": "pdf", "items": []},
         'other': {"title": "other", "items": []}
     }
+
+    def categorize_link(name, url):
+        if re.search(r'\.(mp4|mkv|avi|mov|flv|wmv|m3u8)$', url, re.IGNORECASE):
+            return 'video'
+        elif re.search(r'\.pdf$', url, re.IGNORECASE):
+            return 'pdf'
+        else:
+            return 'other'
 
     for line in lines:
         line = line.strip()
@@ -60,15 +67,19 @@ def txt_to_html(txt_path, html_path):
     html_blocks = ""
     for key in ['video', 'pdf', 'other']:
         section = sections[key]
-        links = "\n".join([
-            f"""<a href="{url}" target="_blank">
-  <div class='video'>{html.escape(name)}</div>
-</a>"""
-            for name, url in section["items"]
-        ])
+        if key == 'video':
+            links = "\n".join([
+                f"<div class='video' onclick=\"playVideo('{url}', '{html.escape(name)}')\">{html.escape(name)}</div>"
+                for name, url in section["items"]
+            ])
+        else:
+            links = "\n".join([
+                f"<a href='{url}' target='_blank'><div class='video'>{html.escape(name)}</div></a>"
+                for name, url in section["items"]
+            ])
         html_blocks += f"""
-<div id="{key}" class="tab-content" style="display:none;">
-  <div class="video-list">
+<div id='{key}' class='tab-content' style='display:none;'>
+  <div class='video-list'>
     {links}
   </div>
 </div>
@@ -78,9 +89,9 @@ def txt_to_html(txt_path, html_path):
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
+  <meta charset='utf-8' />
   <title>{html.escape(file_name)}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'/>
   <style>
     body {{
       background: #0a0a0a;
@@ -90,19 +101,23 @@ def txt_to_html(txt_path, html_path):
       padding: 20px;
       overflow-x: hidden;
     }}
-    h1 {{
-      background: #111;
-      color: #00ffe0;
-      font-size: 24px;
-      padding: 20px;
-      border-radius: 12px;
+    .player-box {{
+      max-width: 900px;
+      margin: auto;
       text-align: center;
-      margin-bottom: 30px;
-      box-shadow: 0 0 15px #00ffe0;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      box-sizing: border-box;
+    }}
+    video {{
+      width: 100%;
       max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #00ffe0;
+    }}
+    #videoTitle {{
+      font-size: 20px;
+      font-weight: bold;
+      color: #00ffe0;
+      margin: 10px 0 30px;
     }}
     .tabs {{
       display: flex;
@@ -110,8 +125,6 @@ def txt_to_html(txt_path, html_path):
       gap: 10px;
       flex-wrap: wrap;
       margin-bottom: 20px;
-      box-sizing: border-box;
-      max-width: 100%;
     }}
     .tab-button {{
       padding: 12px 20px;
@@ -169,7 +182,13 @@ def txt_to_html(txt_path, html_path):
   </style>
 </head>
 <body>
-  <h1 class="heading">{html.escape(file_name)}</h1>
+  <div class="player-box">
+    <video id="player" controls autoplay playsinline>
+      <source src="" type="application/x-mpegURL">
+      Your browser does not support the video tag.
+    </video>
+    <div id="videoTitle"></div>
+  </div>
   <div class="tabs">
     <button class="tab-button" onclick="showTab('video')">📺 video</button>
     <button class="tab-button" onclick="showTab('pdf')">📄 pdf</button>
@@ -180,20 +199,24 @@ def txt_to_html(txt_path, html_path):
     ᗪEᐯEᒪOᑭEᗪ ᗷY <a href="https://t.me/Lallantoop">𓍯𝙎𝙪𝙟𝙖𝙡⚝</a>
   </div>
   <script>
+    function playVideo(url, title) {{
+      const player = document.getElementById('player');
+      const videoTitle = document.getElementById('videoTitle');
+      player.src = url;
+      videoTitle.textContent = title;
+      window.scrollTo({{ top: 0, behavior: 'smooth' }});
+      player.play();
+    }}
     function showTab(tabId) {{
       var tabs = document.querySelectorAll('.tab-content');
       tabs.forEach(tab => tab.style.display = 'none');
       document.getElementById(tabId).style.display = 'block';
-
       var buttons = document.querySelectorAll('.tab-button');
       buttons.forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
     }}
-    function scrollToTop() {{
-      window.scrollTo({{top: 0, behavior: 'smooth'}});
-    }}
     document.addEventListener("DOMContentLoaded", () => {{
-      document.querySelector(".tab-button").click();
+      showTab('video');  // ✅ video tab ko default dikhana
     }});
   </script>
 </body>
@@ -202,6 +225,8 @@ def txt_to_html(txt_path, html_path):
 
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
+
+
 
 def categorize_link(name, url):
     import re
