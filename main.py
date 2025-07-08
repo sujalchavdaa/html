@@ -10,7 +10,7 @@ from flask import Flask
 OWNER = 8118667253 
 API_ID = os.getenv("API_ID", "25933223")
 API_HASH = os.getenv("API_HASH", "6ef5a426d85b7f01562a41e6416791d3")
-TOKEN = os.getenv("BOT_TOKEN", "8003010506:AAE6Pbjg4eZhmSflIHKtVxmeQU8L7KbCQi0")
+TOKEN = os.environ["BOT_TOKEN"]  # ya os.getenv("BOT_TOKEN")
 
 bot = telebot.TeleBot(TOKEN)
 
