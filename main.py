@@ -13,6 +13,8 @@ API_HASH = os.getenv("API_HASH", "6ef5a426d85b7f01562a41e6416791d3")
 TOKEN = os.environ["BOT_TOKEN"]  # ya os.getenv("BOT_TOKEN")
 
 bot = telebot.TeleBot(TOKEN)
+bot.remove_webhook()  # ✅ Disable any existing webhook before polling
+
 
 user_state = {}
 
