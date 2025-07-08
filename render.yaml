@@ -1,5 +1,5 @@
 services:
-  - type: worker
+  - type: web
     name: html-txt-bot
     env: python
     plan: free
