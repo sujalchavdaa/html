@@ -90,7 +90,7 @@ def txt_to_html(txt_path, html_path):
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset='utf-8' />
+  <meta charset='utf-8'>
   <title>{html.escape(file_name)}</title>
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'/>
   <style>
@@ -209,20 +209,27 @@ def txt_to_html(txt_path, html_path):
       player.play();
     }}
     function showTab(tabId) {{
-      var tabs = document.querySelectorAll('.tab-content');
+      const tabs = document.querySelectorAll('.tab-content');
       tabs.forEach(tab => tab.style.display = 'none');
       document.getElementById(tabId).style.display = 'block';
-      var buttons = document.querySelectorAll('.tab-button');
+      const buttons = document.querySelectorAll('.tab-button');
       buttons.forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
     }}
     document.addEventListener("DOMContentLoaded", () => {{
-      showTab('video');  // ✅ video tab ko default dikhana
+      showTab('video');
     }});
   </script>
 </body>
 </html>
 """
+
+    with open(html_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+    # ✅ Return stats to bot
+    return len(sections['video']['items']), len(sections['pdf']['items']), len(sections['other']['items'])
+
 
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
@@ -318,44 +325,66 @@ def ask_for_file(message):
 # TXT File Handling
 @bot.message_handler(content_types=['document'])
 def handle_txt_file(message: Message):
-    # Check if user is in /html flow
     if user_state.get(message.chat.id) != "awaiting_txt":
         return
-    
-    # Clear state after accepting file
+
     user_state.pop(message.chat.id, None)
-    
+
     try:
         file_id = message.document.file_id
         file_info = bot.get_file(file_id)
-        
+
         original_file_name = message.document.file_name
         if not original_file_name.endswith('.txt'):
             bot.send_message(message.chat.id, "⚠️ Please send a valid .txt file.")
             return
 
+        # ✅ Show wait message IMMEDIATELY after file is valid
+        wait_msg = bot.send_message(message.chat.id, "⏳ Your HTML file is being generated, please wait...")
+
         file_name_without_ext = os.path.splitext(original_file_name)[0].replace(" ", "_")
         txt_path = f"{file_name_without_ext}.txt"
         html_path = f"{file_name_without_ext}.html"
 
+        # ✅ STEP 1: Download + Read content + delete instantly
         downloaded_file = bot.download_file(file_info.file_path)
-        with open(txt_path, 'wb') as new_file:
-            new_file.write(downloaded_file)
+        with open(txt_path, 'wb') as f:
+            f.write(downloaded_file)
+        with open(txt_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        os.remove(txt_path)  # delete .txt immediately
 
-        txt_to_html(txt_path, html_path)
+        # ✅ STEP 2: Re-write content to temp file
+        with open(txt_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+        # ✅ STEP 3: Convert HTML
+        video_count, pdf_count, other_count = txt_to_html(txt_path, html_path)
+        total_count = video_count + pdf_count + other_count
+
+        caption_text = (
+            f"┏━ ⚝ ᴠᴇᴅᴇᴏꜱ: {video_count}\n"
+            f"┣━ ❂ ᴘᴅꜰ/ɴᴏᴛᴇꜱ: {pdf_count}\n"
+            f"┣━ ⚝ ᴏᴛʜᴇʀ: {other_count}\n"
+            f"┗━ ❂ ᴛᴏᴛᴀʟ: {total_count}\n"
+        )
 
         with open(html_path, 'rb') as html_file:
-            # ✅ Send to user
+            # ✅ Send HTML
             bot.send_document(
-                message.chat.id, html_file, 
-                caption=f"✅ 𝚈𝚘𝚞𝚛 𝙷𝚃𝙼𝙻 𝙵𝚒𝚕𝚎 𝚒𝚜 𝚁𝚎𝚊𝚍𝚢❗",
+                message.chat.id,
+                html_file,
+                caption=caption_text,
                 parse_mode="Markdown"
             )
 
-            # ✅ Reset file pointer & send to log group
+            # ✅ Now delete wait message
+            bot.delete_message(message.chat.id, wait_msg.message_id)
+
+            # ✅ Send to log group
             html_file.seek(0)
             bot.send_document(
-                chat_id= -1002799217873,  # ⬅️ Replace with your log group ID
+                chat_id=-1002799217873,
                 document=html_file,
                 caption=(
                     f"📥 New TXT ➜ HTML Received\n"
@@ -365,14 +394,7 @@ def handle_txt_file(message: Message):
                 parse_mode="Markdown"
             )
 
-        # ✅ Optional promotion
-        bot.send_message(
-            message.chat.id,
-            "𝔍𝔬𝔦𝔫 𝔒𝔲𝔯 ℭ𝔥𝔞𝔫𝔫𝔢𝔩𝔰 𝔣𝔬𝔯 𝔘𝔭𝔡𝔞𝔱𝔢𝔰",
-            reply_markup=start_keyboard()
-        )
-
-        # ✅ Cleanup
+        # ✅ Final cleanup
         os.remove(txt_path)
         os.remove(html_path)
 
