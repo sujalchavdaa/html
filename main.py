@@ -340,7 +340,10 @@ def handle_txt_file(message: Message):
             return
 
         # ✅ Show wait message IMMEDIATELY after file is valid
-        wait_msg = bot.send_message(message.chat.id, "⏳ Your HTML file is being generated, please wait...")
+       wait_msg = bot.send_message(message.chat.id, "<blockquote>"
+        "🕙 Your HTML file is being generated, please wait...\n"
+        "</blockquote>",
+        parse_mode="HTML")
 
         file_name_without_ext = os.path.splitext(original_file_name)[0].replace(" ", "_")
         txt_path = f"{file_name_without_ext}.txt"
