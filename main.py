@@ -29,9 +29,6 @@ def run_flask():
     app.run(host="0.0.0.0", port=port)
 
 
-
-
-
 # Function to extract URLs from text
 def txt_to_html(txt_path, html_path):
     import os, html, re
@@ -73,11 +70,14 @@ def txt_to_html(txt_path, html_path):
                 f"<div class='video' onclick=\"playVideo('{url}', '{html.escape(name)}')\">{html.escape(name)}</div>"
                 for name, url in section["items"]
             ])
-        else:
-            links = "\n".join([
-                f"<a href='{url}' target='_blank'><div class='video'>{html.escape(name)}</div></a>"
-                for name, url in section["items"]
-            ])
+    else:
+        links = "\n".join([
+          f"<div class='video' onclick=\"playVideo('{url}', '{html.escape(name)}')\">{html.escape(name)}</div>"
+          if ("brightcove" in url.lower() or url.lower().endswith(('.m3u8', '.mp4')))
+          else f"<a href='{url}' target='_blank'><div class='video'>{html.escape(name)}</div></a>"
+          for name, url in section["items"]
+    ])
+
         html_blocks += f"""
 <div id='{key}' class='tab-content' style='display:none;'>
   <div class='video-list'>
