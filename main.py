@@ -235,9 +235,20 @@ def broadcast_handler(message):
 @bot.message_handler(commands=["html"])
 def ask_for_file(message):
     user_state[message.chat.id] = "awaiting_txt"
-    safe_send(bot.send_message, message.chat.id,
-        "❁ <b>Hii, I am TXT TO Html bot ❁ </b> \n\n"
-        "<blockquote>Send me your .txt file to convert it to HTML</blockquote>", parse_mode="HTML")
+
+    # ✅ MongoDB‑me user save (agar pehle nahi hai)
+    uid = message.chat.id
+    if not user_collection.find_one({"_id": uid}):
+        user_collection.insert_one({"_id": uid})
+
+    bot.send_message(
+        uid,
+        "❁ <b>Hii, I am TXT TO Html bot ❁ </b> \n\n"
+        "<blockquote>"
+        "Send me your .txt file to convert it to HTML\n"
+        "</blockquote>",
+        parse_mode="HTML"
+    )
 
 @bot.message_handler(content_types=['document'])
 def handle_txt_file(message: Message):
