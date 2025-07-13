@@ -7,6 +7,14 @@ from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 import threading
 from flask import Flask
 from telebot.apihelper import ApiTelegramException
+from pymongo import MongoClient
+
+# Initialize MongoDB connection
+MONGO_URI = os.getenv("MONGO_URI")
+client = MongoClient(MONGO_URI)
+db = client["sujalbot"]
+user_collection = db["sujalbot"]  
+
 
 OWNER = 8118667253 
 API_ID = os.getenv("API_ID", "25933223")
@@ -175,6 +183,11 @@ def start_command(message):
     user_state.pop(message.chat.id, None)
     user_id = message.from_user.id
     mention = f"[{message.from_user.first_name}](tg://user?id={user_id})"
+
+    # ✅ MongoDB me user ID save karo (agar pehle se nahi hai)
+    if not user_collection.find_one({"_id": user_id}):
+        user_collection.insert_one({"_id": user_id})
+
     random_image_url = random.choice([
         "https://envs.sh/Qt9.jpg/IMG20250621443.jpg",
         "https://envs.sh/Fio.jpg/IMG2025070370.jpg",
@@ -187,6 +200,37 @@ def start_command(message):
         "𝐂𝐑𝐄𝐀𝐓𝐎𝐑:- [𓍯𝙎𝙪𝙟𝙖𝙡⚝](http://t.me/Lallantoop)"
     )
     safe_send(bot.send_photo, message.chat.id, photo=random_image_url, caption=caption, parse_mode="Markdown", reply_markup=start_keyboard())
+
+
+@bot.message_handler(commands=["broadcast"])
+def broadcast_handler(message):
+    if message.from_user.id != OWNER:
+        return bot.reply_to(message, "⛔ You are not authorized to use /broadcast.")
+
+    parts = message.text.split(None, 1)
+    if len(parts) < 2:
+        return bot.reply_to(
+            message,
+            "❗ Usage:\n`/broadcast Your message here`",
+            parse_mode="Markdown"
+        )
+
+    text = parts[1]
+    success = failed = 0
+
+    for user in user_collection.find():
+        try:
+            bot.send_message(user["_id"], text, parse_mode="HTML", disable_web_page_preview=True)
+            success += 1
+        except Exception as e:
+            failed += 1
+            print(f"❌ Failed to send to {user['_id']}: {e}")
+
+    bot.reply_to(
+        message,
+        f"📢 <b>Broadcast Summary</b>\n\n✅ Sent: <b>{success}</b>\n❌ Failed: <b>{failed}</b>",
+        parse_mode="HTML"
+    )
 
 @bot.message_handler(commands=["html"])
 def ask_for_file(message):
