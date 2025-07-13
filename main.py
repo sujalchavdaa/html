@@ -44,7 +44,7 @@ def txt_to_html(txt_path, html_path):
     }
 
     def categorize_link(name, url):
-        if re.search(r'\.(mp4|mkv|avi|mov|flv|wmv|m3u8)$', url, re.IGNORECASE):
+        if re.search(r'\.(mp4|mkv|avi|mov|flv|wmv|m3u8)$', url, re.IGNORECASE) or 'youtube.com' in url or 'youtu.be' in url or 'brightcove' in url:
             return 'video'
         elif re.search(r'\.pdf$', url, re.IGNORECASE):
             return 'pdf'
@@ -63,28 +63,25 @@ def txt_to_html(txt_path, html_path):
             sections[category]["items"].append((name, url))
 
     html_blocks = ""
+
     for key in ['video', 'pdf', 'other']:
         section = sections[key]
-        if key == 'video':
-            links = "\n".join([
-                f"<div class='video' onclick=\"playVideo('{url}', '{html.escape(name)}')\">{html.escape(name)}</div>"
-                for name, url in section["items"]
-            ])
-    else:
-        links = "\n".join([
-          f"<div class='video' onclick=\"playVideo('{url}', '{html.escape(name)}')\">{html.escape(name)}</div>"
-          if ("brightcove" in url.lower() or url.lower().endswith(('.m3u8', '.mp4')))
-          else f"<a href='{url}' target='_blank'><div class='video'>{html.escape(name)}</div></a>"
-          for name, url in section["items"]
-    ])
+        links = []
+        for name, url in section["items"]:
+            safe_name = html.escape(name)
+            if key == 'video':
+                if any(x in url.lower() for x in ['.m3u8', '.mp4', 'youtube', 'brightcove']):
+                    links.append(f"<div class='video' onclick=\"playVideo('{url}', '{safe_name}')\">{safe_name}</div>")
+                else:
+                    links.append(f"<a href='{url}' target='_blank'><div class='video'>{safe_name}</div></a>")
+            else:
+                links.append(f"<a href='{url}' target='_blank'><div class='video'>{safe_name}</div></a>")
 
         html_blocks += f"""
-<div id='{key}' class='tab-content' style='display:none;'>
-  <div class='video-list'>
-    {links}
-  </div>
-</div>
-"""
+        <div class='tab-content' id='{key}' style='display: none;'>
+            {'\n'.join(links) if links else "<p>No content found</p>"}
+        </div>
+        """
 
     html_content = f"""
 <!DOCTYPE html>
@@ -161,6 +158,7 @@ def txt_to_html(txt_path, html_path):
       font-weight: 500;
       transition: 0.3s ease;
       border-left: 4px solid #00ffe0;
+      margin-bottom: 12px;
     }}
     .video:hover {{
       transform: translateX(6px);
@@ -227,7 +225,6 @@ def txt_to_html(txt_path, html_path):
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-    # ✅ Return stats to bot
     return len(sections['video']['items']), len(sections['pdf']['items']), len(sections['other']['items'])
 
 
