@@ -57,6 +57,7 @@ def safe_send(send_fn, *args, **kwargs):
             print(f"⚠️ Error for {chat_id}: {e}")
 
 # Function to extract URLs from textdef txt_to_html(txt_path, html_path):
+def txt_to_html(txt_path, html_path):    
     import os, html, re
     file_name = os.path.basename(txt_path).replace('.txt', '')
 
