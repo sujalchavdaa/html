@@ -56,8 +56,7 @@ def safe_send(send_fn, *args, **kwargs):
         else:
             print(f"⚠️ Error for {chat_id}: {e}")
 
-# Function to extract URLs from text
-def txt_to_html(txt_path, html_path):
+# Function to extract URLs from textdef txt_to_html(txt_path, html_path):
     import os, html, re
     file_name = os.path.basename(txt_path).replace('.txt', '')
 
@@ -95,10 +94,16 @@ def txt_to_html(txt_path, html_path):
         links = []
         for name, url in section["items"]:
             safe_name = html.escape(name)
-            if key == 'video' and any(x in url.lower() for x in ['.m3u8', '.mp4', 'youtube', 'brightcove']):
-                links.append(f"<div class='video' onclick=\"playVideo('{url}', '{safe_name}')\">{safe_name}</div>")
+            if key == 'video':
+                if 'youtube.com' in url or 'youtu.be' in url:
+                    if 'youtube.com/embed/' in url:
+                        url = url.replace("youtube.com/embed/", "youtube.com/watch?v=")
+                    links.append(f"<a href='{url}' target='_blank'><div class='video'>{safe_name}</div></a>")
+                else:
+                    links.append(f"<div class='video' onclick=\"playVideo('{url}', '{safe_name}')\">{safe_name}</div>")
             else:
                 links.append(f"<a href='{url}' target='_blank'><div class='video'>{safe_name}</div></a>")
+
         html_blocks += f"""
         <div class='tab-content' id='{key}' style='display: none;'>
             {'\n'.join(links) if links else "<p>No content found</p>"}
@@ -156,6 +161,7 @@ def txt_to_html(txt_path, html_path):
         f.write(html_content)
 
     return len(sections['video']['items']), len(sections['pdf']['items']), len(sections['other']['items'])
+
 
 def start_keyboard():
     keyboard = InlineKeyboardMarkup()
