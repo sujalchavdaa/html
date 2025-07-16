@@ -17,8 +17,8 @@ user_collection = db["sujalbot"]
 
 
 OWNER = 8118667253 
-API_ID = os.getenv("API_ID", "25933223")
-API_HASH = os.getenv("API_HASH", "6ef5a426d85b7f01562a41e6416791d3")
+API_ID = os.getenv("API_ID", "")
+API_HASH = os.getenv("API_HASH", "")
 TOKEN = os.environ["BOT_TOKEN"]
 
 bot = telebot.TeleBot(TOKEN)
