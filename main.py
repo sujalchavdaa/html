@@ -138,7 +138,7 @@ def txt_to_html(txt_path, html_path):
     <button class="tab-button" onclick="showTab('other')">🧩 other</button>
   </div>
   {html_blocks}
-  <div class="footer">ᗪEᐯEᒪOᑭEᗪ ᗷY <a href="https://t.me/+U8mdPrE5IxY2YjY9">𓍯𝙎𝙪𝙟𝙖𝙡⚝</a></div>
+  <div class="footer">ᗪEᐯEᒪOᑭEᗪ ᗷY <a href="https://t.me/+a4G4NWd8v4kxODk1">𓍯𝙎𝙪𝙟𝙖𝙡⚝</a></div>
   <script>
     function playVideo(url, title) {{
       const player = document.getElementById('player');
@@ -167,8 +167,8 @@ def txt_to_html(txt_path, html_path):
 def start_keyboard():
     keyboard = InlineKeyboardMarkup()
     keyboard.row(
-        InlineKeyboardButton("ＣＨＡＮＮＥＬ", url="https://t.me/studywlthme"),
-        InlineKeyboardButton("ＯＷＮＥＲ", url="https://t.me/Lallantoop")
+        InlineKeyboardButton("ＣＨＡＮＮＥＬ", url="https://t.me/+a4G4NWd8v4kxODk1"),
+        InlineKeyboardButton("ＯＷＮＥＲ", url="https://t.me/+a4G4NWd8v4kxODk1")
     )
     return keyboard
 
