@@ -16,7 +16,7 @@ db = client["sujalbot"]
 user_collection = db["sujalbot"]  
 
 
-OWNER = 7114926879 
+OWNER = 8357278714 
 API_ID = os.getenv("API_ID", "")
 API_HASH = os.getenv("API_HASH", "")
 TOKEN = os.environ["BOT_TOKEN"]
@@ -167,8 +167,8 @@ def txt_to_html(txt_path, html_path):
 def start_keyboard():
     keyboard = InlineKeyboardMarkup()
     keyboard.row(
-        InlineKeyboardButton("ＣＨＡＮＮＥＬ", url="https://t.me/+a4G4NWd8v4kxODk1"),
-        InlineKeyboardButton("ＯＷＮＥＲ", url="https://t.me/+a4G4NWd8v4kxODk1")
+        InlineKeyboardButton("ＣＨＡＮＮＥＬ", url="https://t.me/+AduUHr-vUc1kZDY1"),
+        InlineKeyboardButton("ＯＷＮＥＲ", url="https://t.me/+AduUHr-vUc1kZDY1")
     )
     return keyboard
 
@@ -298,7 +298,7 @@ def handle_txt_file(message: Message):
             if wait_msg:
                 safe_send(bot.delete_message, message.chat.id, wait_msg.message_id)
             html_file.seek(0)
-            safe_send(bot.send_document, -1002808313488, html_file,
+            safe_send(bot.send_document, -1003056595782, html_file,
                 caption=f"📥 New TXT ➜ HTML Received\n👤 From: [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n📝 File: `{original_file_name}`",
                 parse_mode="Markdown")
         os.remove(txt_path)
