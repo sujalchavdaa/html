@@ -298,7 +298,7 @@ def handle_txt_file(message: Message):
             if wait_msg:
                 safe_send(bot.delete_message, message.chat.id, wait_msg.message_id)
             html_file.seek(0)
-            safe_send(bot.send_document, -1003056595782, html_file,
+            safe_send(bot.send_document, -1003093198255, html_file,
                 caption=f"📥 New TXT ➜ HTML Received\n👤 From: [{message.from_user.first_name}](tg://user?id={message.from_user.id})\n📝 File: `{original_file_name}`",
                 parse_mode="Markdown")
         os.remove(txt_path)
