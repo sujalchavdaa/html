@@ -167,8 +167,8 @@ def txt_to_html(txt_path, html_path):
 def start_keyboard():
     keyboard = InlineKeyboardMarkup()
     keyboard.row(
-        InlineKeyboardButton("ＣＨＡＮＮＥＬ", url="https://t.me/+RBd6qQQxU9AwYzRl"),
-        InlineKeyboardButton("ＯＷＮＥＲ", url="https://t.me/+RBd6qQQxU9AwYzRl")
+        InlineKeyboardButton("ＣＨＡＮＮＥＬ", url="https://t.me/+f1M9zjM7oJw0ZDY1"),
+        InlineKeyboardButton("ＯＷＮＥＲ", url="https://t.me/+f1M9zjM7oJw0ZDY1")
     )
     return keyboard
 
@@ -204,7 +204,7 @@ def start_command(message):
         f"**ʜᴇʟʟᴏ {mention}**\n\n"
         f"✿ I am a **Txt To HTML Converter Bot**\n"
         "✿ Use **/html** to convert a .txt file to .html\n\n"
-        "𝐂𝐑𝐄𝐀𝐓𝐎𝐑:- [𓍯𝙎𝙪𝙟𝙖𝙡⚝](http://t.me/Lallantoop)"
+        "𝐂𝐑𝐄𝐀𝐓𝐎𝐑:- [𓍯𝙎𝙪𝙟𝙖𝙡⚝](https://t.me/+f1M9zjM7oJw0ZDY1)"
     )
     safe_send(bot.send_photo, message.chat.id, photo=random_image_url, caption=caption, parse_mode="Markdown", reply_markup=start_keyboard())
 
