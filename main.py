@@ -16,7 +16,7 @@ db = client["sujalbot"]
 user_collection = db["sujalbot"]  
 
 
-OWNER = 8357278714 
+OWNER = 8458169280 
 API_ID = os.getenv("API_ID", "")
 API_HASH = os.getenv("API_HASH", "")
 TOKEN = os.environ["BOT_TOKEN"]
