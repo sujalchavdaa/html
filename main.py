@@ -138,7 +138,7 @@ def txt_to_html(txt_path, html_path):
     <button class="tab-button" onclick="showTab('other')">🧩 other</button>
   </div>
   {html_blocks}
-  <div class="footer">ᗪEᐯEᒪOᑭEᗪ ᗷY <a href="https://t.me/+RBd6qQQxU9AwYzRl">𓍯𝙎𝙪𝙟𝙖𝙡⚝</a></div>
+  <div class="footer">ᗪEᐯEᒪOᑭEᗪ ᗷY <a href="https://t.me/+f1M9zjM7oJw0ZDY1">𓍯𝙎𝙪𝙟𝙖𝙡⚝</a></div>
   <script>
     function playVideo(url, title) {{
       const player = document.getElementById('player');
